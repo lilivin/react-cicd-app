@@ -13,7 +13,7 @@ jobs:
       - name: Configure node
         uses: actions/setup-node@v3
         with:
-          node-version: '20'  # Tutaj podajesz wersję Node.js, np. 18 lub 14
+          node-version: '16'  # Tutaj podajesz wersję Node.js, np. 18 lub 14
         
       - name: Install dependencies
         run: npm ci
