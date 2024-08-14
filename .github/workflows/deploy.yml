@@ -1,47 +1,16 @@
-name: Deploy App
+name: Deploy on push
 
 on:
-  workflow_dispatch:
-    inputs:
-      deploy-netlify:
-        type: boolean
-        description: Enable Netlify deployment
-        default: true
-      deploy-vercel:
-        type: boolean
-        description: Enable Vercel deployment
-        default: true
-    
+  push:
+    branches:
+      - master
+
 jobs:
-  deploy:
-    runs-on: windows-latest
-    env:
-      VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
-      VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
-      NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
-      NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
+  deploy-netlify:
+    uses: ./.github/workflows/deploy-netlify.yml
+    secrets: inherit
 
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
-      - name: Configure node
-        uses: ./.github/actions/setup-project
-        
-      - name: Install dependencies
-        run: npm ci
-
-      - name: Lint code
-        run: npm run lint
-
-      - name: Build app
-        run: npm run build
-
-      - name: Deploy app to Vercel production env
-        uses: ./.github/actions/deploy-vercel
-        with:
-          mode: 'production'
-          vercel-token: ${{ secrets.VERCEL_TOKEN }}
-        env:
-          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
-          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+  deploy-vercel:
+    needs: deploy-netlify
+    uses: ./.github/workflows/deploy-vercel.yml
+    secrets: inherit
