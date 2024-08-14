@@ -1,4 +1,4 @@
-name: Deploy App
+name: PR App
 
 on:
   pull_request:
@@ -17,7 +17,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Configure node
-        uses: actions/setup-node@v3
+        uses: ./.github/actions/setup-project
         
       - name: Install dependencies
         run: npm ci
@@ -28,18 +28,11 @@ jobs:
       - name: Build app
         run: npm run build
 
-      - name: Install Vercel CLI
-        if: ${{ inputs.deploy-vercel }}
-        run: npm install --global vercel@canary
-
-      - name: Pull Vercel Environment Information
-        if: ${{ inputs.deploy-vercel }}
-        run: vercel pull --yes --environment=production --token=${{ secrets.VERCEL_TOKEN }}
-
-      - name: Build for Vercel
-        if: ${{ inputs.deploy-vercel }}
-        run: vercel build --token=${{ secrets.VERCEL_TOKEN }}
-
-      - name: Deploy to Vercel
-        if: ${{ inputs.deploy-vercel }}
-        run: vercel deploy --prebuilt --token=${{ secrets.VERCEL_TOKEN }}
+      - name: Deploy app to Vercel preview env
+        uses: ./.github/actions/deploy-vercel
+        with:
+          mode: 'preview'
+          vercel-token: ${{ secrets.VERCEL_TOKEN }}
+        env:
+          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
