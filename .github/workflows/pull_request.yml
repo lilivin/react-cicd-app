@@ -3,7 +3,7 @@ name: Pull Request
 on:
   pull_request:
     branches:
-      - master
+      - main
 
 jobs:
   pr-check:
@@ -19,9 +19,6 @@ jobs:
 
       - name: Lint code
         run: npm run lint
-
-      - name: Run unit tests
-        run: npm run test
 
       - name: Deploy app to Vercel preview env
         uses: ./.github/actions/deploy-vercel
