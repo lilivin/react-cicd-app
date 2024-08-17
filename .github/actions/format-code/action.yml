@@ -1,0 +1,9 @@
+name: Format
+description: Format code with EsLint
+
+runs:
+  using: 'composite'
+  steps:
+    - name: Lint code
+      run: npm run lint
+      shell: bash
